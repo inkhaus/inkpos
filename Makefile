@@ -23,7 +23,7 @@ clean:
 	docker-compose down -v
 
 #Stop without removing volumes
-.PHONY stop
+.PHONY: stop
 stop:
 	docker-compose down
 
