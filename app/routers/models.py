@@ -74,6 +74,7 @@ class SaleCreate(BaseModel):
     payment_channel: PaymentChannel = Field(alias="paymentChannel")
     created_at: datetime = Field(alias="createdAt", default_factory=datetime.utcnow)
     recorded_by: EmailStr = Field(alias="recordedBy")
+    note: Optional[str]
 
 class SaleResponse(SaleCreate):
     id: str
@@ -81,6 +82,11 @@ class SaleResponse(SaleCreate):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
+
+class EnquiryStatus(str, Enum):
+    pending_response = "pending_response"
+    responded_to_enquirer = "responded_to_enquirer"
+    should_be_ignored = "should_be_ignored"
 
 class ServiceCategory(str, Enum):
     t_shirts_customization = "t_shirt_printing_and_customization"
@@ -92,6 +98,7 @@ class EnquiryBase(BaseModel):
     phone_number: str = Field(alias="phoneNumber")
     service_category: ServiceCategory = Field(alias="serviceCategory")
     message: str
+    status: EnquiryStatus = Field(default=EnquiryStatus.pending_response)
 
 class EnquiryCreate(EnquiryBase):
     created_at: datetime = Field(alias="createdAt", default_factory=datetime.utcnow)
@@ -103,6 +110,11 @@ class EnquiryResponse(EnquiryCreate):
         orm_mode = True
         allow_population_by_field_name = True
 
+class FotostoreAppointmentStatus(str, Enum):
+    pending_fulfilment = "pending_fulfilment"
+    cancelled = "cancelled"
+    fulfilled = "fulfilled"
+
 class FotostorePurpose(str, Enum):
     photoshoot = "photoshoot"
     rental = "rental"
@@ -113,6 +125,8 @@ class FotostoreAppointmentBase(BaseModel):
     purpose: FotostorePurpose
     day: date
     time: int = Field(ge=7, le=20)
+    status: FotostoreAppointmentStatus = Field(default=FotostoreAppointmentStatus.pending_fulfilment)
+    special_request: Optional[str] = Field(alias="specialRequest")
 
 class FotostoreAppointmentCreate(FotostoreAppointmentBase):
     created_at: datetime = Field(alias="createdAt", default_factory=datetime.utcnow)

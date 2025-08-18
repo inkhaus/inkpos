@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
@@ -31,3 +32,28 @@ async def get_sales(
         del sale["_id"]
 
     return existing_sales
+
+@router.get("/search", response_model=List[SaleResponse])
+async def search_sales(
+    start_date: datetime = Query(description="Start datetime (ISO format)"),
+    end_date: datetime = Query(description="End datetime (ISO format)"),
+    sales = Depends(get_sales_collection)
+):
+    if start_date > end_date:
+        raise HTTPException(status_code=400, detail="start_date must be before end_date")
+    
+    cursor = sales.find(
+        {
+            "createdAt": {
+                "$gte": start_date,
+                "$lte": end_date,
+            }
+        }
+    )
+
+    matched_sales = []
+    async for doc in cursor:
+        doc["id"] = str(doc["_id"])
+        matched_sales.append(SaleResponse(**doc))
+
+    return matched_sales

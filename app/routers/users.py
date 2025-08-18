@@ -34,3 +34,12 @@ async def authenticate(payload: UserAuthentication, users = Depends(get_users_co
     
     user = {**existing_user, "id": str(existing_user['_id'])}
     return user
+
+@router.get("/", response_model=list[UserResponse])
+async def get_users(users = Depends(get_users_collection)):
+    existing_users = await users.find().to_list()
+    for user in existing_users:
+        user["id"] = str(user["_id"])
+        del user["_id"]
+
+    return existing_users
