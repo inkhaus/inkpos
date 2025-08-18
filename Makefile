@@ -15,7 +15,7 @@ dev:
 # Production (base compose only)
 .PHONY: prod
 prod:
-	docker-compose -f docker-compose.yml up --build
+	docker-compose -f docker-compose.yml up --build -d
 
 # Stop + remove everything including volumes
 .PHONY: clean
