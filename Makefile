@@ -22,6 +22,11 @@ prod:
 clean:
 	docker-compose down -v
 
+#Stop without removing volumes
+.PHONY stop
+stop:
+	docker-compose down
+
 # Rebuild all images from scratch and restart in dev
 .PHONY: rebuild
 rebuild:
