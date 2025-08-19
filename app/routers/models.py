@@ -39,6 +39,7 @@ class ProductBase(BaseModel):
     artwork_url: Optional[str] = Field(alias="artworkUrl")
     business_unit: BusinessUnit = Field(alias="businessUnit")
     created_at: datetime = Field(alias="createdAt", default_factory=datetime.utcnow)
+    minimum_order_quantity: int = Field(alias="minimumOrderQuantity", default=1)
 
 class ProductCreate(ProductBase):
     pass
@@ -99,9 +100,16 @@ class EnquiryBase(BaseModel):
     service_category: ServiceCategory = Field(alias="serviceCategory")
     message: str
     status: EnquiryStatus = Field(default=EnquiryStatus.pending_response)
+    updated_by: Optional[EmailStr] = Field(alias="updatedBy")
+    responder_note: Optional[str] = Field(alias="responderNote")
 
 class EnquiryCreate(EnquiryBase):
     created_at: datetime = Field(alias="createdAt", default_factory=datetime.utcnow)
+
+class EnquiryStatusUpdate(BaseModel):
+    status: EnquiryStatus
+    updated_by: EmailStr = Field(alias="updatedBy")
+    responder_note: str = Field(alias="responderNote")
 
 class EnquiryResponse(EnquiryCreate):
     id: str
@@ -130,6 +138,7 @@ class FotostoreAppointmentBase(BaseModel):
 
 class FotostoreAppointmentCreate(FotostoreAppointmentBase):
     created_at: datetime = Field(alias="createdAt", default_factory=datetime.utcnow)
+    updated_by: Optional[EmailStr] = Field(alias="updatedBy")
 
 class FotostoreAppointmentResponse(FotostoreAppointmentCreate):
     id: str
@@ -137,4 +146,8 @@ class FotostoreAppointmentResponse(FotostoreAppointmentCreate):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
+
+class FotostoreAppointmentUpdate(BaseModel):
+    status: FotostoreAppointmentStatus
+    updated_by: EmailStr = Field(alias="updatedBy")
 
