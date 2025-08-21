@@ -151,3 +151,32 @@ class FotostoreAppointmentUpdate(BaseModel):
     status: FotostoreAppointmentStatus
     updated_by: EmailStr = Field(alias="updatedBy")
 
+class ExpenseCategory(str, Enum):
+    electricity = "electricity"
+    water = "water"
+    food = "food"
+    internet = "internet"
+    other_utility = "other_utility"
+    materials_purchase = "materials_purchase"
+    third_party_service = "third_party_service"
+
+class Payee(BaseModel):
+    fullname: str
+    phone_number: str = Field(alias="phoneNumber")
+    email_address: Optional[str] = Field(alias="emailAddress")
+
+class ExpenseCreate(BaseModel):
+    amount: int
+    category: ExpenseCategory
+    evidence: str
+    notes: Optional[str]
+    payee: Payee
+    created_at: datetime = Field(alias="createdAt", default_factory=datetime.utcnow)
+
+class ExpenseResponse(ExpenseCreate):
+    id: str
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+

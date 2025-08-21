@@ -3,7 +3,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.database.shared import get_sales_collection
+from app.database.shared import get_sales_collection, get_transactions_collection
 from app.routers.models import SaleCreate, SaleResponse
 
 router = APIRouter(
@@ -12,10 +12,30 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=SaleResponse)
-async def create_sale(payload: SaleCreate, sales = Depends(get_sales_collection)):
+async def create_sale(payload: SaleCreate, sales = Depends(get_sales_collection), transactions = Depends(get_transactions_collection)):
     sale_doc = payload.model_dump(by_alias=True)
     result = await sales.insert_one(sale_doc)
     sale = {**sale_doc, "id": str(result.inserted_id)}
+
+    if result:
+        last_balance = 0
+        last_transaction = await transactions.find_one(
+            sort=[("_id", -1)]
+        )
+        if last_transaction:
+            last_balance = last_transaction["balance"]
+        else:
+            last_balance = 0
+
+        transaction = {
+            "transactionType": "credit",
+            "amount": sale_doc["total_price"],
+            "balance": sale_doc["total_price"] + last_balance,
+            "createdAt": sale_doc["createdAt"],
+            "sale": sale_doc
+        }
+
+        await transactions.insert_one(transaction)
 
     return sale
 

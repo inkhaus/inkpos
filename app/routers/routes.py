@@ -3,6 +3,7 @@ from app.routers.services import router as services_router
 from app.routers.sales import router as sales_router
 from app.routers.enquiries import router as enquiries_router
 from app.routers.appointments import router as appointments_router
+from app.routers.expenses import router as expenses_router
 
 api_routers = [
     users_router,
@@ -10,4 +11,5 @@ api_routers = [
     sales_router,
     enquiries_router,
     appointments_router,
+    expenses_router,
 ]

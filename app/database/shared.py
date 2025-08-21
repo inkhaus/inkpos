@@ -22,3 +22,9 @@ async def get_enquiries_collection():
 
 async def get_appointments_collection():
     return db.appointments
+
+async def get_transactions_collection():
+    return db.transactions
+
+async def get_expenses_collection():
+    return db.expenses
