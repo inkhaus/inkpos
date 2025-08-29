@@ -172,6 +172,7 @@ class ExpenseCreate(BaseModel):
     notes: Optional[str]
     payee: Payee
     created_at: datetime = Field(alias="createdAt", default_factory=datetime.utcnow)
+    recorded_by: EmailStr = Field(alias="recordedBy")
 
 class ExpenseResponse(ExpenseCreate):
     id: str
